@@ -1,0 +1,42 @@
+body {
+    background-color: #ffffff;
+}
+
+h1 {
+    color: #000000;
+    text-align: center;
+}
+
+#fileInput {
+    color: #000000;
+    text-align: center;
+}
+
+.button {
+    background-color: #327b34;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 200px;
+    border-radius: 8px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.button:hover {
+    background-color: #4CAF50;
+}
+
+table {
+    border-collapse: collapse;
+    border: 1px solid black;
+    padding: 8px;
+}
+
+td, th, tr {
+    border: 1px solid black;
+    padding: 8px;
+}
