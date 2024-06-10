@@ -143,6 +143,7 @@ function processCsvData(data) {
         const lastname = parts[3];
         const qn = parts[8];
         const qa = parts[14];
+        const qp = parts[16];
         let deviation = 0;
 
         // Check if the username is the same as the previous row
@@ -152,7 +153,7 @@ function processCsvData(data) {
 
             deviation = Math.abs(qa - key[qn-1])/key[qn-1];
 
-            currentUser.q.push({ qn: qn, qa: qa, qd: deviation});
+            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation});
         } else {
             // Add the previous user object to the users array
             if (currentUser) {
@@ -165,7 +166,7 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qd: Math.abs(qa - key[qn-1])/key[qn-1]}]
+                q: [{ qn: qn, qa: qa, qp:qp, qd: Math.abs(qa - key[qn-1])/key[qn-1]}]
                
             }; 
         }
@@ -215,6 +216,11 @@ function makeTableDev(users) {
         headerRow.appendChild(headerCell);
     });
 
+    //add total to the header
+    const totalCell = document.createElement('th');
+    totalCell.textContent = 'Total';
+    headerRow.appendChild(totalCell);
+
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
@@ -242,6 +248,10 @@ function makeTableDev(users) {
             qaCell.textContent = bucket(question.qd);
             row.appendChild(qaCell);
         });
+
+        const totalCell = document.createElement('td');
+        totalCell.textContent = user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2);
+        row.appendChild(totalCell);
 
         tbody.appendChild(row);
     });
