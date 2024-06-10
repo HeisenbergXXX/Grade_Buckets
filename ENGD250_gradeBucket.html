@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- CSS -->
-    <link rel="stylesheet" href="ENGD250_gradeBucket.css">
+    <link rel="stylesheet" href="styleSheet.css">
     <!-- JS -->
-    <script src="ENGD250_gradeBucket.js"></script>
+    <script src="script.js"></script>
     <title>ENGD250 Grade</title>
 </head>
 <body>
@@ -16,14 +16,30 @@
     <h1>ENGD250 Grade Calculator</h1>
 
 <div>
+<!-- indicator for key uploaded -->
+    <h2 id="keyIndicator" style="display: none;">Answer Key Uploaded</h2>
+    <!-- indicator for document uploaded -->
+    <h2 id="docIndicator" style="display: none;">Document Uploaded</h2>
+    <!-- indicator for document processed -->
+    <h2 id="processedIndicator" style="display: none;">Document Processed</h2>
+    <!-- indicator for document exported -->
+    <h2 id="exportedIndicator" style="display: none;">Document Exported</h2>
+</div>
+
+<div>
     <!-- button to import document -->
     <button id="importButton" class="button">Import CSV File</button>
+    <!-- button to import anwser key -->
+    <button id="importKeyButton" class="button">Import Answer Key</button>
     <!-- button to Process document(hidden) -->
     <button id="processButton" class="button" style="display: none;">Process</button>
+    <!-- button to Export document(hidden) -->
+    <button id="exportButton" class="button" style="display: none;">Export</button>
 
 </div>
 
     <input type="file" id="fileInput" style="display: none;" accept=".csv">
+    <input type="file" id="keyInput" style="display: none;" accept=".csv">
     <pre id="output"></pre>
     
 </body>
