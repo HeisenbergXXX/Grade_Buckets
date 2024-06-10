@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
         });
 
+
         // Export button
         const exportButton = document.getElementById('exportButton');
         exportButton.addEventListener('click', function() {
@@ -113,6 +114,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
             a.href = url;
             a.download = 'output.csv';
             a.click();
+
+            // //indicator for exporting
+            // exportedIndicator.style.display = 'block';
+            // //get the saved path and display it
+            // document.getElementById('exportPath').textContent = a.href;
         });
 
     } else {
@@ -264,6 +270,20 @@ function makeTableDev(users) {
     importButton.style.display = 'none';
     //show the export button after processing
     exportButton.style.display = 'block';
+
+    //calculate and display class average
+    let sum = 0;
+    let count = 0;
+    users.forEach(user => {
+        sum += user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0);
+        count++;
+    });
+    const average = sum / count;
+    console.log('Class average:', average);
+    document.getElementById('classAverage').textContent = 'Class average: ' + average.toFixed(2);
+    document.getElementById('classAverage').style.display = 'block';
+    document.getElementById('classCount').textContent = 'Class Size: ' + count;
+    document.getElementById('classCount').style.display = 'block';
 }
 
 function bucket(dev) {
