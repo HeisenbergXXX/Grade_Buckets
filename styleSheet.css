@@ -3,7 +3,11 @@ body {
 }
 
 h1 {
-    color: #000000;
+    color: #ffffff;
+    background-color: rgba(219, 39, 39, 0.922);
+    width: 500px;
+    padding: 10px;
+    border-radius: 8px;
     text-align: center;
 }
 
@@ -13,7 +17,7 @@ h1 {
 }
 
 .button {
-    background-color: #22d712;
+    background-color: rgba(219, 39, 39, 0.922);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -24,6 +28,14 @@ h1 {
     margin-left: auto;
     margin-right: auto;
     display: block;
+}
+
+#buttonsField {
+    background-color: #f4f4f4;
+    width: 500px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
 }
 
 .button:hover {
