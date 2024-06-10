@@ -36,10 +36,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     reader.onload = function(e) {
                         const data = e.target.result;
                         console.log(data);
+
                         getKey(data);
 
                         if (key) {
                             keyIndicator.style.display = 'block';
+                            importKeyButton.style.display = 'none';
                             console.log('Key uploaded successfully');
                         } else {
                             console.error('Key not found');
@@ -68,7 +70,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         const contents = e.target.result;
                         // processCsvData(contents);
                         output.textContent = contents;
+                        // Show the process button after importing if a file is selected
+                        processButton.style.display = 'block';
+                        
+                        processButton.addEventListener('click', function() {
+                        // alert('Processing the file...');
+                        output.textContent = '';
 
+                        try {
+                            processCsvData(contents);
+                            makeTable(users);
+                        } catch (error) {
+                            alert('An error occurred while processing CSV data:', error);
+                            console.error('An error occurred while processing CSV data:', error);
+                        }
+                        
+                        });
                         //hide the import button after importing
                         importButton.style.display = 'none';
                         docIndicator.style.display = 'block';
@@ -78,19 +95,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 } else {
                     alert('No file selected');
                 }
-            });
-
-        // Show the process button after importing if a file is selected
-        processButton.style.display = 'block';
-        
-        processButton.addEventListener('click', function() {
-        // alert('Processing the file...');
-        output.textContent = '';
-        processCsvData(contents);
-        makeTable(users);
-        });
-
-    
+            });    
 
     } else {
         console.error('Elements not found');
