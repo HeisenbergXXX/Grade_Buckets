@@ -3,46 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSS -->
     <link rel="stylesheet" href="styleSheet.css">
-    <!-- JS -->
     <script src="script.js"></script>
     <title>ENGD250 Grade</title>
 </head>
 <body>
-<!-- dark mode toggle button -->
-<!-- <button id="darkModeToggle">Dark Mode</button> -->
-<!-- title -->
-    <h1>ENGD250 Grade Calculator</h1>
+    <h1>ENGD250 Grade Bucket Scheme</h1>
 
-<div>
-<!-- indicator for key uploaded -->
-    <h2 id="keyIndicator" style="display: none;">Answer Key Uploaded</h2>
-    <!-- indicator for document uploaded -->
-    <h2 id="docIndicator" style="display: none;">Document Uploaded</h2>
-    <!-- indicator for document exported -->
-    <h2 id="exportedIndicator" style="display: none;">Document Exported</h2>
-</div>
+    <div>
+        <h3 id="keyIndicator" style="display: none;">Answer Key Uploaded</h3>
+        <h3 id="docIndicator" style="display: none;">Document Uploaded</h3>
+        <h3 id="exportedIndicator" style="display: none;">Document Exported</h3>
+    </div>
 
-<div>
-    <!-- button to import document -->
-    <button id="importButton" class="button">Import CSV File</button>
-    <!-- button to import anwser key -->
-    <button id="importKeyButton" class="button">Import Answer Key</button>
-    <!-- button to Process document(hidden) -->
-    <button id="processButton" class="button" style="display: none;">Process</button>
-    <!-- button to Export document(hidden) -->
-    <button id="exportButton" class="button" style="display: none;">Export</button>
-
-</div>
-
-<!-- <div>
-    <form id="weightForm">
-        <label for="weight">Grade:</label>
-        <input type="number" id="grade" name="grade" min="0" max="100" required>
-        <button type="submit" class="button2">Submit</button>
-    </form>
-</div> -->
+    <div>
+        <button id="importButton" class="button">Import CSV File</button>
+        <button id="importKeyButton" class="button">Import Answer Key</button>
+        <button id="processButton" class="button" style="display: none;">Process</button>
+        <button id="exportButton" class="button" style="display: none;">Export</button>
+    </div>
 
     <input type="file" id="fileInput" style="display: none;" accept=".csv">
     <input type="file" id="keyInput" style="display: none;" accept=".csv">

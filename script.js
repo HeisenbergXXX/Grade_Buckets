@@ -1,9 +1,7 @@
-
 // This script is for the ENGD250 grade bucket. It allows the instructor to import a CSV file and display the data on the page for further processing.
 
 // Author: Bennett Xia
 // Last Updated: 06-09-2024
-
 
 const users = [];
 const key = [];
@@ -23,66 +21,64 @@ document.addEventListener('DOMContentLoaded', (event) => {
     if (importButton && fileInput && processButton && importKeyButton) {
         console.log('Elements found');
 
-        
         importKeyButton.addEventListener('click', function() {
             console.log('Import key button clicked');
             keyInput.click();
         });
 
-            keyInput.addEventListener('change', function(event) {
-                console.log('Key input changed');
-                const keyFile = event.target.files[0];
-                if (keyFile) {
-                    console.log('Key file selected:', keyFile.name);
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const data = e.target.result;
-                        console.log(data);
+        keyInput.addEventListener('change', function(event) {
+            console.log('Key input changed');
+            const keyFile = event.target.files[0];
+            if (keyFile) {
+                console.log('Key file selected:', keyFile.name);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    console.log(data);
 
-                        getKey(data);
+                    getKey(data);
 
-                        if (key.length > 0) {
-                            keyIndicator.style.display = 'block';
-                            importKeyButton.style.display = 'none';
-                            console.log('Key uploaded successfully');
-                        } else {
-                            console.error('Key not found');
-                        }
-                    };
-                    reader.readAsText(keyFile);
-                } else {
-                    alert('No key file selected');
-                }
-            });
-
+                    if (key.length > 0) {
+                        keyIndicator.style.display = 'block';
+                        importKeyButton.style.display = 'none';
+                        console.log('Key uploaded successfully');
+                    } else {
+                        console.error('Key not found');
+                    }
+                };
+                reader.readAsText(keyFile);
+            } else {
+                alert('No key file selected');
+            }
+        });
 
         importButton.addEventListener('click', function() {
             console.log('Import button clicked');
             fileInput.click();
         });
 
-            fileInput.addEventListener('change', function(event) {
-                console.log('File input changed');
-                const file = event.target.files[0];
+        fileInput.addEventListener('change', function(event) {
+            console.log('File input changed');
+            const file = event.target.files[0];
 
-                if (file) {
-                    console.log('File selected:', file.name);
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const contents = e.target.result;
-                        // processCsvData(contents);
-                        output.textContent = contents;
+            if (file) {
+                console.log('File selected:', file.name);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const contents = e.target.result;
+                    // processCsvData(contents);
+                    output.textContent = contents;
 
-                        processButton.style.display = 'block';
-                        
-                        processButton.addEventListener('click', function() {
+                    processButton.style.display = 'block';
+
+                    processButton.addEventListener('click', function() {
                         // alert('Processing the file...');
                         output.textContent = '';
 
                         if (key) {
                             try {
-                            processCsvData(contents);
-                            makeTableDev(users);
+                                processCsvData(contents);
+                                makeTableDev(users);
                             } catch (error) {
                                 alert('An error occurred while processing CSV data:', error);
                                 console.error('An error occurred while processing CSV data:', error);
@@ -91,18 +87,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             alert('Please import the keyFile first!');
                             console.error('Key not found');
                         }
-                        
+
                     });
                     //hide the import button after importing
                     importButton.style.display = 'none';
                     docIndicator.style.display = 'block';
 
-                    };
-                    reader.readAsText(file);
-                } else {
-                    alert('No file selected');
-                }
-            });    
+                };
+                reader.readAsText(file);
+            } else {
+                alert('No file selected');
+            }
+        });
+
+        // Export button
+        const exportButton = document.getElementById('exportButton');
+        exportButton.addEventListener('click', function() {
+            console.log('Export button clicked');
+            const csv = users.map(user => {
+                return `${user.username},${user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2)}`;
+            }).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'output.csv';
+            a.click();
+        });
 
     } else {
         console.error('Elements not found');
@@ -110,22 +121,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 function getKey(data) {
-    // Get anwser keys for each question from imported csv file
+    // Get answer keys for each question from imported csv file
     const lines = data.split('\n');
-    const anwser = lines[0].split(',');
-    for (let i = 0; i < anwser.length; i++) {
-        key.push(anwser[i]);
+    const answer = lines[0].split(',');
+    for (let i = 0; i < answer.length; i++) {
+        key.push(answer[i]);
     }
     console.log(key);
     return key;
 }
 
 function processCsvData(data) {
-
-
     console.log('Processing CSV data...');
 
-    // const users = [];
     let currentUser = null;
 
     // Split the data into rows
@@ -148,17 +156,12 @@ function processCsvData(data) {
 
         // Check if the username is the same as the previous row
         if (currentUser && username === currentUser.username) {
-            // Add the question Number and answer to the user object
-            // currentUser.q.push({ qn: qn, qa: qa });
-
-            deviation = Math.abs(qa - key[qn-1])/key[qn-1];
-
-            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation});
+            deviation = Math.abs(qa - key[qn - 1]) / key[qn - 1];
+            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation });
         } else {
             // Add the previous user object to the users array
             if (currentUser) {
                 users.push(currentUser);
-                // displayUser(currentUser);
             }
 
             // Create a new user object
@@ -166,16 +169,14 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qp:qp, qd: Math.abs(qa - key[qn-1])/key[qn-1]}]
-               
-            }; 
+                q: [{ qn: qn, qa: qa, qp: qp, qd: Math.abs(qa - key[qn - 1]) / key[qn - 1] }]
+            };
         }
     }
 
     // Add the last user to the array
     if (currentUser) {
         users.push(currentUser);
-        // displayUser(currentUser);
     }
 }
 
@@ -186,7 +187,7 @@ function displayUser(user) {
         output.textContent += `${question.qa}, `;
     });
     output.textContent += '\n';
-    
+
     //hide the process and import button after processing
     processButton.style.display = 'none';
     importButton.style.display = 'none';
@@ -243,8 +244,6 @@ function makeTableDev(users) {
 
         user.q.forEach(question => {
             const qaCell = document.createElement('td');
-            // qaCell.textContent = question.qa;
-            // qaCell.textContent = question.qa + ' (' + (question.qd / 100).toFixed(2) + '%)' + ' ' + bucket(question.qd);
             qaCell.textContent = bucket(question.qd);
             row.appendChild(qaCell);
         });
@@ -260,7 +259,6 @@ function makeTableDev(users) {
     //append table to the output div
     output.appendChild(table);
 
-
     //hide the process and import button after processing
     processButton.style.display = 'none';
     importButton.style.display = 'none';
@@ -275,5 +273,4 @@ function bucket(dev) {
         }
     }
     return 0;
-    
 }
