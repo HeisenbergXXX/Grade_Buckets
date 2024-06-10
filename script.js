@@ -7,6 +7,8 @@
 
 const users = [];
 const key = [];
+const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
+const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -39,7 +41,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
                         getKey(data);
 
-                        if (key) {
+                        if (key.length > 0) {
                             keyIndicator.style.display = 'block';
                             importKeyButton.style.display = 'none';
                             console.log('Key uploaded successfully');
@@ -70,7 +72,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         const contents = e.target.result;
                         // processCsvData(contents);
                         output.textContent = contents;
-                        // Show the process button after importing if a file is selected
+
                         processButton.style.display = 'block';
                         
                         processButton.addEventListener('click', function() {
@@ -80,7 +82,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         if (key) {
                             try {
                             processCsvData(contents);
-                            makeTable(users);
+                            makeTableDev(users);
                             } catch (error) {
                                 alert('An error occurred while processing CSV data:', error);
                                 console.error('An error occurred while processing CSV data:', error);
@@ -119,6 +121,8 @@ function getKey(data) {
 }
 
 function processCsvData(data) {
+
+
     console.log('Processing CSV data...');
 
     // const users = [];
@@ -146,7 +150,7 @@ function processCsvData(data) {
             // Add the question Number and answer to the user object
             // currentUser.q.push({ qn: qn, qa: qa });
 
-            deviation = Math.abs(qa - key[qn-1]);
+            deviation = Math.abs(qa - key[qn-1])/key[qn-1];
 
             currentUser.q.push({ qn: qn, qa: qa, qd: deviation});
         } else {
@@ -161,10 +165,9 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qd: Math.abs(qa - key[qn-1])}]
+                q: [{ qn: qn, qa: qa, qd: Math.abs(qa - key[qn-1])/key[qn-1]}]
                
             }; 
-            console.log(currentUser.q);
         }
     }
 
@@ -190,7 +193,7 @@ function displayUser(user) {
     exportButton.style.display = 'block';
 }
 
-function makeTable(users) {
+function makeTableDev(users) {
     //create table
     const table = document.createElement('table');
     table.setAttribute('border', '1');
@@ -235,7 +238,8 @@ function makeTable(users) {
         user.q.forEach(question => {
             const qaCell = document.createElement('td');
             // qaCell.textContent = question.qa;
-            qaCell.textContent = question.qa + ' (' + question.qd + ')';
+            // qaCell.textContent = question.qa + ' (' + (question.qd / 100).toFixed(2) + '%)' + ' ' + bucket(question.qd);
+            qaCell.textContent = bucket(question.qd);
             row.appendChild(qaCell);
         });
 
@@ -254,10 +258,12 @@ function makeTable(users) {
     exportButton.style.display = 'block';
 }
 
-function compareResults(user, key) {
-
-    user.q.forEach(question => {
-        deviation.push(Math.abs(question.qa - key[question.qn]));
-    });
-    return score;
+function bucket(dev) {
+    for (let i = 0; i < tolerance.length; i++) {
+        if (dev <= tolerance[i]) {
+            return gradeMulti[i];
+        }
+    }
+    return 0;
+    
 }
