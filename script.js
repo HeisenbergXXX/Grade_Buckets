@@ -77,18 +77,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         // alert('Processing the file...');
                         output.textContent = '';
 
-                        try {
+                        if (key) {
+                            try {
                             processCsvData(contents);
                             makeTable(users);
-                        } catch (error) {
-                            alert('An error occurred while processing CSV data:', error);
-                            console.error('An error occurred while processing CSV data:', error);
+                            } catch (error) {
+                                alert('An error occurred while processing CSV data:', error);
+                                console.error('An error occurred while processing CSV data:', error);
+                            }
+                        } else {
+                            alert('Please import the keyFile first!');
+                            console.error('Key not found');
                         }
                         
-                        });
-                        //hide the import button after importing
-                        importButton.style.display = 'none';
-                        docIndicator.style.display = 'block';
+                    });
+                    //hide the import button after importing
+                    importButton.style.display = 'none';
+                    docIndicator.style.display = 'block';
 
                     };
                     reader.readAsText(file);
@@ -134,11 +139,16 @@ function processCsvData(data) {
         const lastname = parts[3];
         const qn = parts[8];
         const qa = parts[14];
+        let deviation = 0;
 
         // Check if the username is the same as the previous row
         if (currentUser && username === currentUser.username) {
             // Add the question Number and answer to the user object
-            currentUser.q.push({ qn: qn, qa: qa });
+            // currentUser.q.push({ qn: qn, qa: qa });
+
+            deviation = Math.abs(qa - key[qn-1]);
+
+            currentUser.q.push({ qn: qn, qa: qa, qd: deviation});
         } else {
             // Add the previous user object to the users array
             if (currentUser) {
@@ -151,8 +161,10 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa }]
-            };
+                q: [{ qn: qn, qa: qa, qd: Math.abs(qa - key[qn-1])}]
+               
+            }; 
+            console.log(currentUser.q);
         }
     }
 
@@ -222,7 +234,8 @@ function makeTable(users) {
 
         user.q.forEach(question => {
             const qaCell = document.createElement('td');
-            qaCell.textContent = question.qa;
+            // qaCell.textContent = question.qa;
+            qaCell.textContent = question.qa + ' (' + question.qd + ')';
             row.appendChild(qaCell);
         });
 
@@ -239,4 +252,12 @@ function makeTable(users) {
     importButton.style.display = 'none';
     //show the export button after processing
     exportButton.style.display = 'block';
+}
+
+function compareResults(user, key) {
+
+    user.q.forEach(question => {
+        deviation.push(Math.abs(question.qa - key[question.qn]));
+    });
+    return score;
 }
