@@ -1,6 +1,6 @@
 Grade Bucket
 
-This Mini web app is to apply "Bucket Scheme" to Solidwords test. 
+This Mini web app is to apply "Bucket Scheme" to Solidworks test. 
 Based on the traditional tolerence method, students will ether get a full mark on a question if it's anwser falls within the given tolerence(1%) or zero. This app is to determin a mark based on how far off the anwser is. 
 
 How to use:
