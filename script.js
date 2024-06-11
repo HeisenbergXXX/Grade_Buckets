@@ -7,9 +7,9 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 5;
-let testTitle = 'test';
-let totalPoints = 30;
+const radius = 5;   //tolerence radius for center of mass
+const testTitle = 'test';
+const totalPoints = 30;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -162,8 +162,8 @@ function processCsvData(data) {
         let qa = parts[14];
         const qp = parts[17];
 
-        //check for null value and replace with 999
-        qa === "" ? qa = 999999999 : qa = parseFloat(qa);
+        //check for null value and replace with 
+        qa === "" ? qa = 'null' : qa = parseFloat(qa);
 
         let deviation = Math.abs((qa - key[qn - 1]) / key[qn - 1]);
 
@@ -232,11 +232,22 @@ function makeTableDev(users) {
         headerCell.textContent = 'Q' + question.qn;
         headerRow.appendChild(headerCell);
     });
-
+    
     //add total to the header
     const totalCell = document.createElement('th');
     totalCell.textContent = 'Total';
     headerRow.appendChild(totalCell);
+    
+    //add percentage to the header
+    const percentCell = document.createElement('th');
+    percentCell.textContent = 'Grade %';
+    headerRow.appendChild(percentCell);
+
+    //add center of mass to the header
+    const CoMCell = document.createElement('th');
+    CoMCell.textContent = ' CoM Deviation(unit: in/mm) ';
+    CoMCell.setAttribute('colspan', '3');
+    headerRow.appendChild(CoMCell);
 
     thead.appendChild(headerRow);
     table.appendChild(thead);
@@ -261,8 +272,8 @@ function makeTableDev(users) {
         user.q.forEach(question => {
             const qaCell = document.createElement('td');
             qaCell.textContent = (bucket(question.qd) * question.qp).toFixed(2).replace(/\.?0+$/, '');
-            // qaCell.textContent = question.qa;
-            // qaCell.textContent = question.qd.toFixed(4);
+            qaCell.textContent += '(' + question.qa + ')';
+            qaCell.textContent += '(' + question.qd.toFixed(4) + ')';
             row.appendChild(qaCell);
         });
 
@@ -273,6 +284,29 @@ function makeTableDev(users) {
         const PercentCell = document.createElement('td');
         PercentCell.textContent = (user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0)/totalPoints * 100).toFixed(2) + '%';
         row.appendChild(PercentCell);
+
+
+        const part1CoMCell = document.createElement('td'); 
+        part1CoMCell.textContent = Math.sqrt(Math.pow(user.q[2].qa-key[2], 2) + 
+                                    Math.pow(user.q[3].qa-key[3], 2) + 
+                                    Math.pow(user.q[4].qa-key[4], 2)).toFixed(3);
+        part1CoMCell.textContent += '(Part1)';
+        row.appendChild(part1CoMCell);
+
+        const part2CoMCell = document.createElement('td');
+        part2CoMCell.textContent = Math.sqrt(Math.pow(user.q[7].qa-key[7], 2) +
+                                    Math.pow(user.q[8].qa-key[8], 2) +
+                                    Math.pow(user.q[9].qa-key[9], 2)).toFixed(3);
+        part2CoMCell.textContent += '(Part2)';                            
+        row.appendChild(part2CoMCell);
+
+        const part3CoMCell = document.createElement('td');
+        part3CoMCell.textContent = Math.sqrt(Math.pow(user.q[12].qa-key[12], 2) +
+                                    Math.pow(user.q[13].qa-key[13], 2) +
+                                    Math.pow(user.q[14].qa-key[14], 2)).toFixed(3);
+        part3CoMCell.textContent += '(Part3)';
+        row.appendChild(part3CoMCell);        
+
 
         tbody.appendChild(row);
     });
@@ -299,7 +333,7 @@ function makeTableDev(users) {
     console.log('Class average:', average);
     document.getElementById('classAverage').textContent = 'Class average: ' + (average*100).toFixed(2)+ '%';
     document.getElementById('classAverage').style.display = 'block';
-    document.getElementById('classCount').textContent = 'Class Size: ' + count;
+    document.getElementById('classCount').textContent = 'Head Count: ' + count;
     document.getElementById('classCount').style.display = 'block';
 }
 
@@ -310,10 +344,9 @@ function bucket(dev) {
         }
     }
 
-
-    // if (dev <= 0.01) {return 1;}        
-
+    // if (dev <= 0.01) {return 1;}    
 
     return 0;
-
 }
+
+
