@@ -9,8 +9,9 @@ How to use:
 1. Download the files;
 2. Open "GradeBucket.html";
 3. Upload a anwserKey.csv;
+   * type all anwsers in a line seperated by ',' and save it as a csv/text file.
+      If the actual anwser is zero, make it 0.000001 or something super small. 
 4. Upload students grade export file(download from D2L: Drop down on a test -> grade -> export to CSV file);
-   * Adjust tolerences if needed;
 6. Click process;
 7. Review the results displayed;
    * Change the testTitle (script.js) to match the grade export file.

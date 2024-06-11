@@ -7,8 +7,9 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-const radius = 5;
-const testTitle = 'test';
+let radius = 5;
+let testTitle = 'test';
+let totalPoints = 30;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -114,7 +115,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'output.csv';
+            a.download = 'ENGD250_GradeBucket.csv';
             a.click();
 
             // //indicator for exporting
@@ -259,7 +260,7 @@ function makeTableDev(users) {
 
         user.q.forEach(question => {
             const qaCell = document.createElement('td');
-            qaCell.textContent = bucket(question.qd);
+            qaCell.textContent = (bucket(question.qd) * question.qp).toFixed(2).replace(/\.?0+$/, '');
             // qaCell.textContent = question.qa;
             // qaCell.textContent = question.qd.toFixed(4);
             row.appendChild(qaCell);
@@ -269,6 +270,10 @@ function makeTableDev(users) {
         totalCell.textContent = user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2);
         row.appendChild(totalCell);
 
+        const PercentCell = document.createElement('td');
+        PercentCell.textContent = (user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0)/totalPoints * 100).toFixed(2) + '%';
+        row.appendChild(PercentCell);
+
         tbody.appendChild(row);
     });
     table.appendChild(tbody);
@@ -277,7 +282,7 @@ function makeTableDev(users) {
     output.appendChild(table);
 
     //hide the process and import button after processing
-    processButton.style.display = 'none';
+    // processButton.style.display = 'none';
     importButton.style.display = 'none';
     //show the export button after processing
     exportButton.style.display = 'block';
