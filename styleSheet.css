@@ -52,3 +52,8 @@ td, th, tr {
     border: 1px solid black;
     padding: 8px;
 }
+
+#keyIndicator, #docIndicator{
+    color: #00ff5e;
+    
+}

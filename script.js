@@ -1,12 +1,14 @@
 // This script is for the ENGD250 grade bucket. It allows the instructor to import a CSV file and display the data on the page for further processing.
 
 // Author: Bennett Xia
-// Last Updated: 06-09-2024
+// Last Updated: 06-10-2024
 
 const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
+const radius = 5;
+const testTitle = 'test';
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -105,8 +107,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const exportButton = document.getElementById('exportButton');
         exportButton.addEventListener('click', function() {
             console.log('Export button clicked');
-            const csv = users.map(user => {
-                return `${user.username},${user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2)}`;
+            const csv = `Username,${testTitle},End-of-Line Indicator\n` + users.map(user => {
+                return `#${user.username},${user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2)},#`;
             }).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -157,13 +159,12 @@ function processCsvData(data) {
         const lastname = parts[3];
         const qn = parts[8];
         const qa = parts[14];
-        const qp = parts[16];
-        let deviation = 0;
+        const qp = parts[17];
+        let deviation = Math.abs(qa - key[qn - 1]) / key[qn - 1];
 
         // Check if the username is the same as the previous row
         if (currentUser && username === currentUser.username) {
-            deviation = Math.abs(qa - key[qn - 1]) / key[qn - 1];
-            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation });
+            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation === 1 ? 0 : deviation}); //if key is 0 then deviation will be 1, so adjust dev to 0. 
         } else {
             // Add the previous user object to the users array
             if (currentUser) {
@@ -175,7 +176,7 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qp: qp, qd: Math.abs(qa - key[qn - 1]) / key[qn - 1] }]
+                q: [{ qn: qn, qa: qa, qp: qp, qd: deviation === 1 ? 0 : deviation}]
             };
         }
     }
