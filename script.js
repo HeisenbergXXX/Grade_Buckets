@@ -158,13 +158,19 @@ function processCsvData(data) {
         const firstname = parts[2];
         const lastname = parts[3];
         const qn = parts[8];
-        const qa = parts[14];
+        let qa = parts[14];
         const qp = parts[17];
-        let deviation = Math.abs(qa - key[qn - 1]) / key[qn - 1];
+
+        //check for null value and replace with 999
+        qa === "" ? qa = 999999999 : qa = parseFloat(qa);
+
+        let deviation = Math.abs((qa - key[qn - 1]) / key[qn - 1]);
 
         // Check if the username is the same as the previous row
         if (currentUser && username === currentUser.username) {
-            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation === 1 ? 0 : deviation}); //if key is 0 then deviation will be 1, so adjust dev to 0. 
+            currentUser.q.push({ qn: qn, qa: qa, qp: qp, 
+                qd: deviation === 1 ? 0 : deviation,       //if input is 0 then deviation will be 1, so adjust dev to 0.
+            });  
         } else {
             // Add the previous user object to the users array
             if (currentUser) {
@@ -176,7 +182,9 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qp: qp, qd: deviation === 1 ? 0 : deviation}]
+                q: [{ qn: qn, qa: qa, qp: qp, 
+                    qd: deviation === 1 ? 0 : deviation,
+                }]
             };
         }
     }
@@ -252,6 +260,8 @@ function makeTableDev(users) {
         user.q.forEach(question => {
             const qaCell = document.createElement('td');
             qaCell.textContent = bucket(question.qd);
+            // qaCell.textContent = question.qa;
+            // qaCell.textContent = question.qd.toFixed(4);
             row.appendChild(qaCell);
         });
 
@@ -279,9 +289,10 @@ function makeTableDev(users) {
         sum += user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0);
         count++;
     });
-    const average = sum / count;
+    console.log('Class sum:', sum);
+    const average = sum / count / key.length;
     console.log('Class average:', average);
-    document.getElementById('classAverage').textContent = 'Class average: ' + average.toFixed(2);
+    document.getElementById('classAverage').textContent = 'Class average: ' + (average*100).toFixed(2)+ '%';
     document.getElementById('classAverage').style.display = 'block';
     document.getElementById('classCount').textContent = 'Class Size: ' + count;
     document.getElementById('classCount').style.display = 'block';
@@ -293,5 +304,11 @@ function bucket(dev) {
             return gradeMulti[i];
         }
     }
+
+
+    // if (dev <= 0.01) {return 1;}        
+
+
     return 0;
+
 }
