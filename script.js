@@ -1,13 +1,13 @@
 // This script is for the ENGD250 grade bucket. It allows the instructor to import a CSV file and display the data on the page for further processing.
 
 // Author: Bennett Xia
-// Last Updated: 06-10-2024
+// First created: 2024-06-09
 
 const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-const radius = 5;   //tolerence radius for center of mass
+let radius = 0;   //tolerence radius for center of mass
 const testTitle = 'test';
 const totalPoints = 30;
 
@@ -159,19 +159,24 @@ function processCsvData(data) {
         const firstname = parts[2];
         const lastname = parts[3];
         const qn = parts[8];
-        let qa = parts[14];
+        let qa = parseFloat(parts[14]);
         const qp = parts[17];
+        let qk = parseFloat(key[qn - 1]);   //key for the question
+        let deviation = 100;      //zero is ideal
 
-        //check for null value and replace with 
-        qa === "" ? qa = 'null' : qa = parseFloat(qa);
+        //check for null value and replace with something
+        // qa === "" ? qa = 'null' : qa = parseFloat(qa);
 
-        let deviation = Math.abs((qa - key[qn - 1]) / key[qn - 1]);
+        //check key if it is zero
+        if (qk !== 0) {
+            deviation = Math.abs((qa - qk) / qk);
+        } else {
+            deviation = Math.abs(qa);
+        }
 
         // Check if the username is the same as the previous row
         if (currentUser && username === currentUser.username) {
-            currentUser.q.push({ qn: qn, qa: qa, qp: qp, 
-                qd: deviation === 1 ? 0 : deviation,       //if input is 0 then deviation will be 1, so adjust dev to 0.
-            });  
+            currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation});  
         } else {
             // Add the previous user object to the users array
             if (currentUser) {
@@ -183,9 +188,7 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qp: qp, 
-                    qd: deviation === 1 ? 0 : deviation,
-                }]
+                q: [{ qn: qn, qa: qa, qp: qp, qd: deviation}]
             };
         }
     }
@@ -226,12 +229,6 @@ function makeTableDev(users) {
         headerCell.textContent = headerText;
         headerRow.appendChild(headerCell);
     });
-    //add question number to the header based on the amount of questions
-    users[0].q.forEach(question => {
-        const headerCell = document.createElement('th');
-        headerCell.textContent = 'Q' + question.qn;
-        headerRow.appendChild(headerCell);
-    });
     
     //add total to the header
     const totalCell = document.createElement('th');
@@ -242,7 +239,14 @@ function makeTableDev(users) {
     const percentCell = document.createElement('th');
     percentCell.textContent = 'Grade %';
     headerRow.appendChild(percentCell);
-
+    
+    //add question number to the header based on the amount of questions
+    users[0].q.forEach(question => {
+        const headerCell = document.createElement('th');
+        headerCell.textContent = 'Q' + question.qn;
+        headerRow.appendChild(headerCell);
+    });
+    
     //add center of mass to the header
     const CoMCell = document.createElement('th');
     CoMCell.textContent = ' CoM Deviation(unit: in/mm) ';
@@ -264,18 +268,10 @@ function makeTableDev(users) {
         const firstnameCell = document.createElement('td');
         firstnameCell.textContent = user.firstname;
         row.appendChild(firstnameCell);
-
+        
         const lastnameCell = document.createElement('td');
         lastnameCell.textContent = user.lastname;
         row.appendChild(lastnameCell);
-
-        user.q.forEach(question => {
-            const qaCell = document.createElement('td');
-            qaCell.textContent = (bucket(question.qd) * question.qp).toFixed(2).replace(/\.?0+$/, '');
-            qaCell.textContent += '(' + question.qa + ')';
-            qaCell.textContent += '(' + question.qd.toFixed(4) + ')';
-            row.appendChild(qaCell);
-        });
 
         const totalCell = document.createElement('td');
         totalCell.textContent = user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2);
@@ -284,6 +280,14 @@ function makeTableDev(users) {
         const PercentCell = document.createElement('td');
         PercentCell.textContent = (user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0)/totalPoints * 100).toFixed(2) + '%';
         row.appendChild(PercentCell);
+        
+        user.q.forEach(question => {
+            const qaCell = document.createElement('td');
+            qaCell.textContent = (bucket(question.qd) * question.qp).toFixed(2).replace(/\.?0+$/, '');
+            // qaCell.textContent += '(' + question.qa + ')';
+            // qaCell.textContent += '(' + question.qd.toFixed(4) + ')';
+            row.appendChild(qaCell);
+        });
 
 
         const part1CoMCell = document.createElement('td'); 
@@ -339,6 +343,7 @@ function makeTableDev(users) {
 
 function bucket(dev) {
     for (let i = 0; i < tolerance.length; i++) {
+
         if (dev <= tolerance[i]) {
             return gradeMulti[i];
         }
