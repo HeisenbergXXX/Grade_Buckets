@@ -7,7 +7,7 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 0;   //tolerence radius for center of mass
+let radius = 0.5;   //tolerence radius for center of mass
 const testTitle = 'test';
 const totalPoints = 30;
 
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                         console.log('Key uploaded successfully');
                     } else {
                         console.error('Key not found');
+                        alert('Key not found');
                     }
                 };
                 reader.readAsText(keyFile);
@@ -164,6 +165,14 @@ function processCsvData(data) {
         let qk = parseFloat(key[qn - 1]);   //key for the question
         let deviation = 100;      //zero is ideal
 
+        let rOne = null;
+        let rTwo = null;
+        let rThree = null;
+
+        let utReg = null;  //User total regular questions
+        let utCoM = null;  //User total center of mass questions
+        // let ut = utReg + utCoM;  //User total
+
         //check for null value and replace with something
         // qa === "" ? qa = 'null' : qa = parseFloat(qa);
 
@@ -179,8 +188,40 @@ function processCsvData(data) {
             currentUser.q.push({ qn: qn, qa: qa, qp: qp, qd: deviation});  
         } else {
             // Add the previous user object to the users array
-            if (currentUser) {
-                users.push(currentUser);
+            if (currentUser) {           
+                users.push(currentUser);                
+                
+                //calculate the deviation of the center of mass
+                currentUser.r[0] = Math.sqrt(Math.pow(currentUser.q[2].qa-key[2], 2) + 
+                                Math.pow(currentUser.q[3].qa-key[3], 2) + 
+                                Math.pow(currentUser.q[4].qa-key[4], 2)).toFixed(3);
+
+                currentUser.r[1] = Math.sqrt(Math.pow(currentUser.q[7].qa-key[7], 2) +
+                                Math.pow(currentUser.q[8].qa-key[8], 2) +
+                                Math.pow(currentUser.q[9].qa-key[9], 2)).toFixed(3);
+
+                currentUser.r[2] = Math.sqrt(Math.pow(currentUser.q[12].qa-key[12], 2) +
+                                Math.pow(currentUser.q[13].qa-key[13], 2) +
+                                Math.pow(currentUser.q[14].qa-key[14], 2)).toFixed(3);
+
+                //calculate the total grade
+                utReg = currentUser.q.reduce((acc, question) => {
+                    if ([1, 2, 6, 7, 11, 12].includes(question.qn)) {
+                        return acc + bucket(question.qd) * question.qp;
+                    } 
+                }, 0);
+
+                //compare the center of mass deviation with radius, then sum up into utCoM
+                utCoM = currentUser.r.reduce((acc, r) => {
+                    if (r <= radius) {
+                        return acc + 3;
+                    } else {
+                        return acc;
+                    }
+                }, 0);
+
+                currentUser.ut[0] = utReg;
+                currentUser.ut[1] = utCoM;
             }
 
             // Create a new user object
@@ -188,7 +229,9 @@ function processCsvData(data) {
                 username: username,
                 firstname: firstname,
                 lastname: lastname,
-                q: [{ qn: qn, qa: qa, qp: qp, qd: deviation}]
+                q: [{ qn: qn, qa: qa, qp: qp, qd: deviation}],
+                r: [rOne, rTwo, rThree],
+                ut: [utReg, utCoM]
             };
         }
     }
@@ -196,6 +239,41 @@ function processCsvData(data) {
     // Add the last user to the array
     if (currentUser) {
         users.push(currentUser);
+
+
+        //calculate the deviation of the center of mass
+        currentUser.r[0] = Math.sqrt(Math.pow(currentUser.q[2].qa-key[2], 2) + 
+                        Math.pow(currentUser.q[3].qa-key[3], 2) + 
+                        Math.pow(currentUser.q[4].qa-key[4], 2)).toFixed(3);
+
+        currentUser.r[1] = Math.sqrt(Math.pow(currentUser.q[7].qa-key[7], 2) +
+                        Math.pow(currentUser.q[8].qa-key[8], 2) +
+                        Math.pow(currentUser.q[9].qa-key[9], 2)).toFixed(3);
+
+        currentUser.r[2] = Math.sqrt(Math.pow(currentUser.q[12].qa-key[12], 2) +
+                        Math.pow(currentUser.q[13].qa-key[13], 2) +
+                        Math.pow(currentUser.q[14].qa-key[14], 2)).toFixed(3);
+
+        
+        //calculate the total grade
+        utReg = currentUser.q.reduce((acc, question) => {
+            if ([1, 2, 6, 7, 11, 12].includes(question.qn)) {
+                return acc + bucket(question.qd) * question.qp;
+            } 
+        }, 0);
+
+        //compare the center of mass deviation with radius, then sum up into utCoM
+        utCoM = currentUser.r.reduce((acc, r) => {
+            if (r <= radius) {
+                return acc + 3;
+            } else {
+                return acc;
+            }
+        }, 0);
+
+        currentUser.ut[0] = utReg;
+        currentUser.ut[1] = utCoM;
+
     }
 }
 
@@ -291,25 +369,24 @@ function makeTableDev(users) {
 
 
         const part1CoMCell = document.createElement('td'); 
-        part1CoMCell.textContent = Math.sqrt(Math.pow(user.q[2].qa-key[2], 2) + 
-                                    Math.pow(user.q[3].qa-key[3], 2) + 
-                                    Math.pow(user.q[4].qa-key[4], 2)).toFixed(3);
-        part1CoMCell.textContent += '(Part1)';
+        part1CoMCell.textContent = user.r[0];
+        // part1CoMCell.textContent += '(Part1)';
         row.appendChild(part1CoMCell);
 
         const part2CoMCell = document.createElement('td');
-        part2CoMCell.textContent = Math.sqrt(Math.pow(user.q[7].qa-key[7], 2) +
-                                    Math.pow(user.q[8].qa-key[8], 2) +
-                                    Math.pow(user.q[9].qa-key[9], 2)).toFixed(3);
-        part2CoMCell.textContent += '(Part2)';                            
+        part2CoMCell.textContent = user.r[1];
+        // part2CoMCell.textContent += '(Part2)';                            
         row.appendChild(part2CoMCell);
 
         const part3CoMCell = document.createElement('td');
-        part3CoMCell.textContent = Math.sqrt(Math.pow(user.q[12].qa-key[12], 2) +
-                                    Math.pow(user.q[13].qa-key[13], 2) +
-                                    Math.pow(user.q[14].qa-key[14], 2)).toFixed(3);
-        part3CoMCell.textContent += '(Part3)';
-        row.appendChild(part3CoMCell);        
+        part3CoMCell.textContent = user.r[2];
+        // part3CoMCell.textContent += '(Part3)';
+        row.appendChild(part3CoMCell);     
+        
+        
+        const CoMCell = document.createElement('td');
+        CoMCell.textContent = user.ut[1];
+        row.appendChild(CoMCell);
 
 
         tbody.appendChild(row);
@@ -333,11 +410,11 @@ function makeTableDev(users) {
         count++;
     });
     console.log('Class sum:', sum);
-    const average = sum / count / key.length;
+    const average = sum / count / totalPoints;
     console.log('Class average:', average);
     document.getElementById('classAverage').textContent = 'Class average: ' + (average*100).toFixed(2)+ '%';
     document.getElementById('classAverage').style.display = 'block';
-    document.getElementById('classCount').textContent = 'Head Count: ' + count;
+    document.getElementById('classCount').textContent = 'Sample Size: ' + count;
     document.getElementById('classCount').style.display = 'block';
 }
 
