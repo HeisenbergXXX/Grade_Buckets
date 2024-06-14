@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         exportButton.addEventListener('click', function() {
             console.log('Export button clicked');
             const csv = `Username,${testTitle},End-of-Line Indicator\n` + users.map(user => {
-                return `#${user.username},${user.q.reduce((acc, question) => acc + bucket(question.qd) * question.qp, 0).toFixed(2)},#`;
+                return `#${user.username},${(user.ut[0]+user.ut[1]).toFixed(2)},#`;
             }).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -303,7 +303,7 @@ function makeTableDev(users) {
     CoMCell.setAttribute('colspan', '3');
     headerRow.appendChild(CoMCell);
 
-    //add a total for center of mass
+    //add a total for center of mass header
     const CoMTotalCell = document.createElement('th');
     CoMTotalCell.textContent = 'CoM';
     headerRow.appendChild(CoMTotalCell);
