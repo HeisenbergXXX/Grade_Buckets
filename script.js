@@ -7,7 +7,7 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 0.5;   //tolerence radius for center of mass (this value need to be linked with valome)
+let radius = 0.5;   //tolerence radius for center of mass (this value need to be linked with valome, and unique for individual part) TBD
 const testTitle = 'test'; //need to add a form to input the test title and display it
 const totalPoints = 30; //need to add a form to input the total points and display it
 
@@ -305,7 +305,7 @@ function makeTableDev(users) {
 
     //add a total for center of mass
     const CoMTotalCell = document.createElement('th');
-    CoMTotalCell.textContent = ' CoM Total ';
+    CoMTotalCell.textContent = 'CoM';
     headerRow.appendChild(CoMTotalCell);
 
     thead.appendChild(headerRow);
