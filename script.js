@@ -7,9 +7,10 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 0.5;   //tolerence radius for center of mass (this value need to be linked with valome, and unique for individual part) TBD
-const testTitle = 'test'; //need to add a form to input the test title and display it
-const totalPoints = 30; //need to add a form to input the total points and display it
+let radius = 0.3;       //tolerence radius for center of mass (this value need to be linked with volume, and unique for individual part) TBD
+let testTitle = '';     //read from import file title
+let questionCount = 0;  //set after key is imported
+let totalPoints = 0;    //set after key is imported
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -37,9 +38,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const data = e.target.result;
-                    console.log(data);
-
+                    // console.log(data);
                     getKey(data);
+                    questionCount = key.length/5;
+                    totalPoints = questionCount * 10;
 
                     if (key.length > 0) {
                         keyIndicator.style.display = 'block';
@@ -67,6 +69,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
             if (file) {
                 console.log('File selected:', file.name);
+
+                testTitle = file.name.split(' ').slice(0, -3).join(' ');
+                console.log('Test title:', testTitle);
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const contents = e.target.result;
@@ -116,8 +122,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'ENGD250_GradeBucket.csv';
+            a.download = testTitle + '_GradeAdjusted.csv';
             a.click();
+
+            // setTimeout(() => {URL.revokeObjectURL(url);}, 100);
 
             // //indicator for exporting
             // exportedIndicator.style.display = 'block';
@@ -193,7 +201,7 @@ function processCsvData(data) {
                 firstname: firstname,
                 lastname: lastname,
                 q: [{ qn: qn, qa: qa, qp: qp, qd: deviation}],
-                r: [null, null, null],
+                r : Array(questionCount).fill(null),
                 ut: [null, null]
             };
         }
@@ -231,7 +239,7 @@ function calculateGrade(currentUser) {
             return acc;
         }
     }, 0);
-        console.log('utReg:', utReg);
+        // console.log('utReg:', utReg);
 
     //compare the center of mass deviation with radius, then sum up into utCoM
     const utCoM = currentUser.r.reduce((acc, r) => {
@@ -241,7 +249,7 @@ function calculateGrade(currentUser) {
             return acc;
         }
     }, 0);
-        console.log('utCoM:', utCoM);
+        // console.log('utCoM:', utCoM);
 
     currentUser.ut[0] = utReg;
     currentUser.ut[1] = utCoM;
@@ -280,7 +288,7 @@ function makeTableDev(users) {
     
     //add total to the header
     const totalCell = document.createElement('th');
-    totalCell.textContent = 'Total';
+    totalCell.textContent = 'Total' + ' (' + totalPoints + ')';
     headerRow.appendChild(totalCell);
     
     //add percentage to the header
@@ -290,22 +298,27 @@ function makeTableDev(users) {
     
     //add question number to the header based on the amount of questions
     users[0].q.forEach((question, index) => {
+        const headerCell = document.createElement('th');
+        headerCell.textContent = 'Q' + question.qn;
+        headerRow.appendChild(headerCell);
+
         if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(index + 1)) {
-            const headerCell = document.createElement('th');
-            headerCell.textContent = 'Q' + question.qn;
-            headerRow.appendChild(headerCell);
+        headerCell.style.backgroundColor = 'grey';
+        headerCell.style.color = 'white';
         }
     });
     
     //add center of mass to the header
     const CoMCell = document.createElement('th');
-    CoMCell.textContent = ' CoM Deviation(unit: in/mm) ';
+    CoMCell.textContent = ' CoM Deviation(Length) ' + 'Sphere r=' + radius;
     CoMCell.setAttribute('colspan', '3');
     headerRow.appendChild(CoMCell);
 
     //add a total for center of mass header
     const CoMTotalCell = document.createElement('th');
     CoMTotalCell.textContent = 'CoM';
+    CoMTotalCell.style.backgroundColor = 'grey';
+    CoMTotalCell.style.color = 'white';
     headerRow.appendChild(CoMTotalCell);
 
     thead.appendChild(headerRow);
@@ -329,7 +342,7 @@ function makeTableDev(users) {
         row.appendChild(lastnameCell);
 
         const totalCell = document.createElement('td');
-        totalCell.textContent = user.ut[0]+user.ut[1];
+        totalCell.textContent = (user.ut[0]+user.ut[1]).toFixed(2);
         row.appendChild(totalCell);
 
         const PercentCell = document.createElement('td');
@@ -337,32 +350,29 @@ function makeTableDev(users) {
         row.appendChild(PercentCell);
         
         user.q.forEach((question, index) => {
-            if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(index + 1)) {
             const qaCell = document.createElement('td');
             qaCell.textContent = (bucket(question.qd) * question.qp).toFixed(2).replace(/\.?0+$/, '');
             row.appendChild(qaCell);
+
+            if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(index + 1)) {
+            qaCell.style.backgroundColor = 'grey';
+            qaCell.style.color = 'white';
             }
         });
 
 
-        const part1CoMCell = document.createElement('td'); 
-        part1CoMCell.textContent = user.r[0];
-        part1CoMCell.textContent += '(Part1)';
-        row.appendChild(part1CoMCell);
-
-        const part2CoMCell = document.createElement('td');
-        part2CoMCell.textContent = user.r[1];
-        part2CoMCell.textContent += '(Part2)';                            
-        row.appendChild(part2CoMCell);
-
-        const part3CoMCell = document.createElement('td');
-        part3CoMCell.textContent = user.r[2];
-        part3CoMCell.textContent += '(Part3)';
-        row.appendChild(part3CoMCell);     
+        for (let i = 0; i < user.r.length; i++) {
+            const partCoMCell = document.createElement('td');
+            partCoMCell.textContent = user.r[i];
+            partCoMCell.textContent += '(Part' + (i + 1) + ')';
+            row.appendChild(partCoMCell);
+        }
         
         
         const CoMCell = document.createElement('td');
         CoMCell.textContent = user.ut[1];
+        CoMCell.style.backgroundColor = 'grey';
+        CoMCell.style.color = 'white';
         row.appendChild(CoMCell);
 
 
