@@ -218,19 +218,23 @@ function processCsvData(data) {
 }
 
 function calculateGrade(currentUser) {
+
     //calculate the deviation of the center of mass
-    currentUser.r[0] = Math.sqrt(Math.pow(currentUser.q[2].qa - key[2], 2) +
-        Math.pow(currentUser.q[3].qa - key[3], 2) +
-        Math.pow(currentUser.q[4].qa - key[4], 2)).toFixed(3);
-
-    currentUser.r[1] = Math.sqrt(Math.pow(currentUser.q[7].qa - key[7], 2) +
-        Math.pow(currentUser.q[8].qa - key[8], 2) +
-        Math.pow(currentUser.q[9].qa - key[9], 2)).toFixed(3);
-
-    currentUser.r[2] = Math.sqrt(Math.pow(currentUser.q[12].qa - key[12], 2) +
-        Math.pow(currentUser.q[13].qa - key[13], 2) +
-        Math.pow(currentUser.q[14].qa - key[14], 2)).toFixed(3);
-
+    const indices = [
+        [2, 3, 4],
+        [7, 8, 9],
+        [12, 13, 14]
+    ];
+    
+    for (let i = 0; i < indices.length; i++) {
+        let sumOfSquares = 0;
+        for (let j = 0; j < indices[i].length; j++) {
+            let index = indices[i][j];
+            sumOfSquares += Math.pow(currentUser.q[index].qa - key[index], 2);
+        }
+        currentUser.r[i] = Math.sqrt(sumOfSquares).toFixed(3);
+    }
+    
     //calculate the total grade for regular questions
     const utReg = currentUser.q.reduce((acc, question) => {
         if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(question.qn)) {
@@ -289,6 +293,8 @@ function makeTableDev(users) {
     //add total to the header
     const totalCell = document.createElement('th');
     totalCell.textContent = 'Total' + ' (' + totalPoints + ')';
+    totalCell.style.backgroundColor = 'orange';
+    totalCell.style.color = 'white';
     headerRow.appendChild(totalCell);
     
     //add percentage to the header
@@ -343,6 +349,8 @@ function makeTableDev(users) {
 
         const totalCell = document.createElement('td');
         totalCell.textContent = (user.ut[0]+user.ut[1]).toFixed(2);
+        totalCell.style.backgroundColor = 'orange';
+        totalCell.style.color = 'white';
         row.appendChild(totalCell);
 
         const PercentCell = document.createElement('td');
