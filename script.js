@@ -7,7 +7,7 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 0.5;   //tolerence radius for center of mass
+let radius = 0.5;   //tolerence radius for center of mass (this value need to be linked with valome)
 const testTitle = 'test';
 const totalPoints = 30;
 
@@ -426,6 +426,7 @@ function bucket(dev) {
         }
     }
 
+    // uncomment this if you want to apply no bucket (and comment out the above for-loop)
     // if (dev <= 0.01) {return 1;}    
 
     return 0;
