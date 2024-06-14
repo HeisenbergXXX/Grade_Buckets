@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const exportButton = document.getElementById('exportButton');
         exportButton.addEventListener('click', function() {
             console.log('Export button clicked');
-            const csv = `Username,${testTitle},End-of-Line Indicator\n` + users.map(user => {
+            const csv = `Username,${testTitle} Point Grade,End-of-Line Indicator\n` + users.map(user => {
                 return `#${user.username},${(user.ut[0]+user.ut[1]).toFixed(2)},#`;
             }).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
