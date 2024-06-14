@@ -9,12 +9,12 @@ How to use:
 1. Download the files;
 2. Open "GradeBucket.html";
 3. Upload a anwserKey.csv;
-   * type all anwsers in a line seperated by ',' and save it as a csv/text file.
-4. Upload students grade export file(download from D2L: Drop down on a test -> grade -> export to CSV file);
+   * type all correct anwsers in a line seperated by ',' and save it as a csv/text file.
+      e.g.  10,15,0,0,5,20,25,0,5,0,30,35,5,5,0
+4. Upload students grade export file;
+   * download from D2L: Drop down on a test -> grade -> export to CSV file;
 6. Click process;
 7. Review the results displayed;
-   * Change the testTitle (script.js) to match the grade export file.
-   * Update totalPoints if needed.
-8. Export to a .csv;
+8. Click Export;
 9. Upload back to D2L.
    
