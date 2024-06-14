@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const contents = e.target.result;
-                    // processCsvData(contents);
                     output.textContent = contents;
 
                     processButton.style.display = 'block';
@@ -83,6 +82,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             try {
                                 processCsvData(contents);
                                 makeTableDev(users);
+                                processButton.style.display = 'none';
                             } catch (error) {
                                 alert('An error occurred while processing CSV data:', error);
                                 console.error('An error occurred while processing CSV data:', error);
@@ -173,7 +173,7 @@ function processCsvData(data) {
         let utCoM = null;  //User total center of mass questions
         // let ut = utReg + utCoM;  //User total
 
-        //check for null value and replace with something
+        //check for null value and replace with something (not necessary for now)
         // qa === "" ? qa = 'null' : qa = parseFloat(qa);
 
         //check key if it is zero
