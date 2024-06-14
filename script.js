@@ -9,8 +9,9 @@ const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
 let radius = 0.3;       //tolerence radius for center of mass (this value need to be linked with volume, and unique for individual part) TBD
 let testTitle = '';     //read from import file title
-let questionCount = 0;  //set after key is imported
-let totalPoints = 0;    //set after key is imported
+let questionCount;  //set after key is imported (key.length)
+let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
+let totalPoints;    //set after key is imported, each question 10 points (1 mass, 6 volume, 3 center of mass)
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -125,12 +126,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             a.download = testTitle + '_GradeAdjusted.csv';
             a.click();
 
-            // setTimeout(() => {URL.revokeObjectURL(url);}, 100);
-
-            // //indicator for exporting
-            // exportedIndicator.style.display = 'block';
-            // //get the saved path and display it
-            // document.getElementById('exportPath').textContent = a.href;
         });
 
     } else {
