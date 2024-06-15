@@ -24,7 +24,7 @@ const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
 const users = [];   //... to store user data...
 const key = [];     //... to store question key...
 const radius = [];  //tolerence radius for center of mass, each part has a different tolerance radius
-const bf = 30;      //bounding box volume factor. Radius = Box volume / bf
+const bf = 0.01;      //bounding box volume factor. Sphere volume = Box volume * bf
 let testTitle = ''; //read from import file title
 let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
@@ -156,6 +156,7 @@ function getKey(data) {
     const lines = data.split('\n');
     const answer = lines[0].split(',');
     const boxVols = lines[1].split(',');
+    console.log('Box Volumes:', boxVols);
 
     for (let i = 0; i < answer.length; i++) {
         key.push(answer[i]);
@@ -163,7 +164,7 @@ function getKey(data) {
 
     //calculate the radius for each part
     for (let i = 0; i < boxVols.length; i++) {
-        radius.push((boxVols[i]/bf).toFixed(3));
+        radius.push((Math.cbrt(3*(boxVols[i]*bf)/(4*Math.PI))).toFixed(2));
     }
 
     console.log('Key:', key);
@@ -267,11 +268,21 @@ function calculateGrade(currentUser) {
     }, 0);
         // console.log('utReg:', utReg);
 
+    // console.log('User:', currentUser);
     //compare the center of mass deviation with radius, then sum up into utCoM
     const utCoM = currentUser.r.reduce((acc, r, index) => {
-        if (r <= radius[index]) {
+        const currentRadius = radius[index];
+        const condition = (r - currentRadius);
+        
+        // console.log('r:', r);
+        // console.log('radius:', currentRadius);
+        // console.log(condition);
+    
+        if (condition < 0) {
+            console.log('Good!');
             return acc + 3;
         } else {
+            console.log('Bad!');
             return acc;
         }
     }, 0);
