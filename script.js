@@ -232,12 +232,10 @@ function processCsvData(data) {
 function calculateGrade(currentUser) {
 
     //calculate the deviation of the center of mass
-    const indices = [
-        [2, 3, 4],
-        [7, 8, 9],
-        [12, 13, 14],
-        [17, 18, 19]
-    ];
+    const indices = [];
+    for (let i = 0; i < questionCount; i += 5) {
+        indices.push([i + 2, i + 3, i + 4]);
+    }
     
     for (let i = 0; i < indices.length; i++) {
         let sumOfSquares = 0;
