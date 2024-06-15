@@ -279,10 +279,10 @@ function calculateGrade(currentUser) {
         // console.log(condition);
     
         if (condition < 0) {
-            console.log('Good!');
+            // console.log('Good!');
             return acc + 3;
         } else {
-            console.log('Bad!');
+            // console.log('Bad!');
             return acc;
         }
     }, 0);
