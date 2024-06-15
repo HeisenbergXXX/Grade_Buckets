@@ -1,5 +1,21 @@
 // This script is for the ENGD250 grade bucket. It allows the instructor to import a CSV file and display the data on the page for further processing.
 
+//********************************************************************************************************************
+// Features:
+//1. Calculate the grade based on the deviation of the answer from the key for mass and volume questions.
+//2. Calculate the grade based on the how far the center of mass is from the 'TRUE' center of mass for each part.
+//3. Test title is read from the imported file name, makes exporting easier and zero input required.
+//4. Grade results are broke down and displayed in a table format for easy viewing.
+
+// Limitations:
+//1. The script is designed for a specific type of test, it will not work for other types of tests.
+//      a. The script is designed for a test that has 20 questions or less, Max 4 parts, each part has 5 questions (1 mass, 1 volume, center of mass XYZ).
+//      b. Each question is worth 10 points, the total points are calculated based on the number of questions.
+//      c. Parts of the codes are 'hardcoded' to fit the specific test type. (format of the exported file from D2L)
+//2. Refresh the page will reset the data, the script does not have a save feature, except for exporting the data.
+
+//********************************************************************************************************************
+
 // Author: Bennett Xia
 // First created: 2024-06-09
 
@@ -7,7 +23,7 @@ const users = [];
 const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 0.3;       //tolerence radius for center of mass (this value need to be linked with volume, and unique for individual part) TBD
+let radius = 1;       //tolerence radius for center of mass (this value need to be linked with volume, and unique for individual part) TBD
 let testTitle = '';     //read from import file title
 let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
@@ -41,7 +57,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     const data = e.target.result;
                     // console.log(data);
                     getKey(data);
-                    questionCount = key.length/5;
+                    questionCount = key.length;
+                    partCount = key.length/5;
                     totalPoints = questionCount * 10;
 
                     if (key.length > 0) {
@@ -196,7 +213,7 @@ function processCsvData(data) {
                 firstname: firstname,
                 lastname: lastname,
                 q: [{ qn: qn, qa: qa, qp: qp, qd: deviation}],
-                r : Array(questionCount).fill(null),
+                r : Array(partCount).fill(null),
                 ut: [null, null]
             };
         }
@@ -218,7 +235,8 @@ function calculateGrade(currentUser) {
     const indices = [
         [2, 3, 4],
         [7, 8, 9],
-        [12, 13, 14]
+        [12, 13, 14],
+        [17, 18, 19]
     ];
     
     for (let i = 0; i < indices.length; i++) {
@@ -232,7 +250,7 @@ function calculateGrade(currentUser) {
     
     //calculate the total grade for regular questions
     const utReg = currentUser.q.reduce((acc, question) => {
-        if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(question.qn)) {
+        if (![3, 4, 5, 8, 9, 10, 13, 14, 15, 18, 19, 20].includes(question.qn)) {
             return acc + bucket(question.qd) * question.qp;
         } else {
             return acc;
@@ -287,7 +305,7 @@ function makeTableDev(users) {
     
     //add total to the header
     const totalCell = document.createElement('th');
-    totalCell.textContent = 'Total' + ' (' + totalPoints + ')';
+    totalCell.textContent = 'Point Total' + ' (' + totalPoints + ')';
     totalCell.style.backgroundColor = 'orange';
     totalCell.style.color = 'white';
     headerRow.appendChild(totalCell);
@@ -303,7 +321,7 @@ function makeTableDev(users) {
         headerCell.textContent = 'Q' + question.qn;
         headerRow.appendChild(headerCell);
 
-        if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(index + 1)) {
+        if (![3, 4, 5, 8, 9, 10, 13, 14, 15, 18, 19, 20].includes(index + 1)) {
         headerCell.style.backgroundColor = 'grey';
         headerCell.style.color = 'white';
         }
@@ -312,7 +330,7 @@ function makeTableDev(users) {
     //add center of mass to the header
     const CoMCell = document.createElement('th');
     CoMCell.textContent = ' CoM Deviation(Length) ' + 'Sphere r=' + radius;
-    CoMCell.setAttribute('colspan', '3');
+    CoMCell.setAttribute('colspan', partCount);
     headerRow.appendChild(CoMCell);
 
     //add a total for center of mass header
@@ -357,7 +375,7 @@ function makeTableDev(users) {
             qaCell.textContent = (bucket(question.qd) * question.qp).toFixed(2).replace(/\.?0+$/, '');
             row.appendChild(qaCell);
 
-            if (![3, 4, 5, 8, 9, 10, 13, 14, 15].includes(index + 1)) {
+            if (![3, 4, 5, 8, 9, 10, 13, 14, 15, 18, 19, 20].includes(index + 1)) {
             qaCell.style.backgroundColor = 'grey';
             qaCell.style.color = 'white';
             }
