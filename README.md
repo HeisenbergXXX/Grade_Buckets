@@ -9,8 +9,10 @@ How to use:
 1. Download the files; (Click the Green "Code" button, then download ZIP)
 2. Open "GradeBucket.html" with any browser;
 3. Import an anwserKey.csv;
-   * type all correct anwsers in a line seperated by ',' and save it as a csv/text file.
+   * type all correct anwsers in a line seperated by ',' 
+   * put bounding box volume in a new line, seperated by ','
       e.g.  10,15,0,0,5,20,25,0,5,0,30,35,5,5,0
+            0.1,25,8.25
 4. Import students grade export (csv) file;
    * download from D2L: Drop down on a test -> grade -> export to CSV file; (Wait for a second then Click the notification Bell to find the download link)
    * DO NOT RENAME THE FILE!

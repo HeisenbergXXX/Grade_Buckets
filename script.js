@@ -19,12 +19,13 @@
 // Author: Bennett Xia
 // First created: 2024-06-09
 
-const users = [];
-const key = [];
 const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
 const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
-let radius = 1;       //tolerence radius for center of mass (this value need to be linked with volume, and unique for individual part) TBD
-let testTitle = '';     //read from import file title
+const users = [];   //... to store user data...
+const key = [];     //... to store question key...
+const radius = [];  //tolerence radius for center of mass, each part has a different tolerance radius
+const bf = 30;      //bounding box volume factor. Radius = Box volume / bf
+let testTitle = ''; //read from import file title
 let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
 let totalPoints;    //set after key is imported, each question 10 points (1 mass, 6 volume, 3 center of mass)
@@ -59,7 +60,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     getKey(data);
                     questionCount = key.length;
                     partCount = key.length/5;
-                    totalPoints = questionCount * 10;
+                    totalPoints = partCount * 10;
 
                     if (key.length > 0) {
                         keyIndicator.style.display = 'block';
@@ -154,10 +155,20 @@ function getKey(data) {
     // Get answer keys for each question from imported csv file
     const lines = data.split('\n');
     const answer = lines[0].split(',');
+    const boxVols = lines[1].split(',');
+
     for (let i = 0; i < answer.length; i++) {
         key.push(answer[i]);
     }
-    console.log(key);
+
+    //calculate the radius for each part
+    for (let i = 0; i < boxVols.length; i++) {
+        radius.push((boxVols[i]/bf).toFixed(3));
+    }
+
+    console.log('Key:', key);
+    console.log('Radius:', radius);
+
     return key;
 }
 
@@ -257,8 +268,8 @@ function calculateGrade(currentUser) {
         // console.log('utReg:', utReg);
 
     //compare the center of mass deviation with radius, then sum up into utCoM
-    const utCoM = currentUser.r.reduce((acc, r) => {
-        if (r <= radius) {
+    const utCoM = currentUser.r.reduce((acc, r, index) => {
+        if (r <= radius[index]) {
             return acc + 3;
         } else {
             return acc;
