@@ -30,8 +30,6 @@ let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
 let totalPoints;    //set after key is imported, each question 10 points (1 mass, 6 volume, 3 center of mass)
 
-console.log(tolerance);
-
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
 
@@ -205,6 +203,7 @@ function getKey(data) {
 
 function processCsvData(data) {
     console.log('Processing CSV data...');
+    console.log('Tolenance:', tolerance);
 
     let currentUser = null;
 
