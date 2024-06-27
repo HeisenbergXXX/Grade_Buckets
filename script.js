@@ -19,12 +19,12 @@
 // Author: Bennett Xia
 // First created: 2024-06-09
 
-const tolerance = [0.005, 0.01, 0.015, 0.02, 0.025, 0.03];
-const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0];
+const tolerance = [0.01, 0.03, 0.05, 0.07, 0.08, 0.1];
+const gradeMulti = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.2];
 const users = [];   //... to store user data...
 const key = [];     //... to store question key...
 const radius = [];  //tolerence radius for center of mass, each part has a different tolerance radius
-const bf = 0.01;      //bounding box volume factor. Sphere volume = Box volume * bf
+const bf = 0.03;      //bounding box volume factor. Sphere volume = Box volume * bf
 let testTitle = ''; //read from import file title
 let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
@@ -448,7 +448,6 @@ function makeTableDev(users) {
 
 function bucket(dev) {
     for (let i = 0; i < tolerance.length; i++) {
-
         if (dev <= tolerance[i]) {
             return gradeMulti[i];
         }
