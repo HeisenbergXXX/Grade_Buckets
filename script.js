@@ -30,6 +30,8 @@ let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
 let totalPoints;    //set after key is imported, each question 10 points (1 mass, 6 volume, 3 center of mass)
 
+console.log(tolerance);
+
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
 
@@ -39,6 +41,34 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const processButton = document.getElementById('processButton');
     const importKeyButton = document.getElementById('importKeyButton');
     const output = document.getElementById('output');
+
+    // Display the tolerance values and grade multipliers in the DOM
+    const toleranceField = document.getElementById('toleranceArray'); 
+    toleranceField.innerHTML = tolerance.map((value, index) => 
+        `<div class="tolerance-row">
+            <input type="number" step="1" id="tolerance_${index}" value="${(value * 100).toFixed(0)}">% 
+            <span>Grade Multiplier: ${gradeMulti[index]}</span>
+        </div>` 
+    ).join(''); 
+
+    // Update tolerance array based on user input and re-calculate results 
+    document.getElementById('updateToleranceButton').addEventListener('click', () => {
+        tolerance.forEach((_, index) => {
+            tolerance[index] = parseFloat(document.getElementById(`tolerance_${index}`).value) / 100; 
+        });
+        console.log('Updated tolerance:', tolerance);
+        alert('Tolerance values updated successfully!');
+        
+        // Recalculate results
+        users.forEach(user => {
+            calculateGrade(user);
+        });
+
+        // Clear previous content
+        const output = document.getElementById('output');
+        output.innerHTML = '';
+        makeTableDev(users);
+    });
 
     if (importButton && fileInput && processButton && importKeyButton) {
         console.log('Elements found');
@@ -308,6 +338,7 @@ function displayUser(user) {
 }
 
 function makeTableDev(users) {
+
     //create table
     const table = document.createElement('table');
     table.setAttribute('border', '1');

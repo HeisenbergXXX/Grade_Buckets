@@ -5,10 +5,19 @@ body {
 h1 {
     color: #ffffff;
     background-color: rgba(219, 39, 39, 0.922);
-    width: 500px;
+    /* width: 50%; */
     padding: 10px;
     border-radius: 8px;
-    text-align: center;
+    /* text-align: center; */
+}
+
+h3 {
+    color: #000000;
+    text-align: left;
+}
+
+#mainContainer {
+    display: flex;
 }
 
 #fileInput {
@@ -17,7 +26,7 @@ h1 {
 }
 
 .button {
-    background-color: rgba(219, 39, 39, 0.922);
+    background-color: rgba(191, 22, 22, 0.922);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -25,17 +34,16 @@ h1 {
     cursor: pointer;
     width: 200px;
     border-radius: 8px;
-    margin-left: auto;
-    margin-right: auto;
+    /* margin-left: auto;
+    margin-right: auto; */
     display: block;
 }
 
-#buttonsField {
+#buttonsField,#toleranceField {
     background-color: #f4f4f4;
-    width: 500px;
-    padding: 10px;
+    width: 20%;
+    padding: 30px;
     border-radius: 8px;
-    text-align: center;
 }
 
 .button:hover {
@@ -55,5 +63,37 @@ td, th, tr {
 
 #keyIndicator, #docIndicator{
     color: #00ff5e;
+    
+}
+
+.tolerance-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.tolerance-row input {
+    margin-right: 10px;
+    width: 50px;
+}
+
+#updateToleranceButton {
+    margin-top: 10px;
+}
+
+#updateToleranceButton {
+    margin-top: 10px;
+    background-color: #b00ad5;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    cursor: pointer;
+    width: 150px;
+    border-radius: 8px;
+    margin-left: auto;
+}
+
+#updateToleranceButton:hover {
+    background-color: #4CAF50;
     
 }

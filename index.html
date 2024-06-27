@@ -10,26 +10,32 @@
 <body>
     <h1>ENGD250 Grade Bucket Scheme</h1>
 
-    <div>
+<div id="mainContainer">
+    <div id="buttonsField">
         <h4 id="keyIndicator" style="display: none;">Answer Key Uploaded</h4>
         <h4 id="docIndicator" style="display: none;">Document Uploaded</h4>
         <h4 id="exportedIndicator" style="display: none;">Document Exported</h4>
         <!-- <h3 id="exportPath" style="display: none;"></h3> -->
-    </div>
-    <div>
+    <!-- </div>
+    <div> -->
         <!-- class average -->
         <h3 id="classAverage" style="display: none;">Class Average: <span id="classAverageValue"></span></h3>
         <!-- class count -->
         <h3 id="classCount" style="display: none;">Class Count: <span id="classCountValue"></span></h3>
-    </div>
-    <div id="buttonsField">
+    <!-- </div>
+    <div id="buttonsField"> -->
         <button id="importKeyButton" class="button">1. Import Answer Key</button>
         <button id="importButton" class="button">2. Import CSV File</button>
         <button id="processButton" class="button" style="display: none;">Process</button>
         <button id="exportButton" class="button" style="display: none;">Export</button>
     </div>
 
-
+    <div id="toleranceField">
+        <h3>Tolerance:</h3>
+        <div id="toleranceArray"></div>
+        <button id="updateToleranceButton">Update</button>
+    </div>
+</div>
 
     <input type="file" id="fileInput" style="display: none;" accept=".csv">
     <input type="file" id="keyInput" style="display: none;" accept=".csv, .txt">
