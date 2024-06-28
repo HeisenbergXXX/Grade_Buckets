@@ -44,8 +44,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const toleranceField = document.getElementById('toleranceArray'); 
     toleranceField.innerHTML = tolerance.map((value, index) => 
         `<div class="tolerance-row">
-            <input type="number" step="1" id="tolerance_${index}" value="${(value * 100).toFixed(0)}">% 
-            <span>Grade Multiplier: ${gradeMulti[index]}</span>
+            <input type="number" step="1" id="tolerance_${index}" value="${(value * 100).toFixed(0)}">%
+            <span> --- </span>
+            <span>[${gradeMulti[index]}]</span>
         </div>` 
     ).join(''); 
 
@@ -162,7 +163,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const exportButton = document.getElementById('exportButton');
         exportButton.addEventListener('click', function() {
             console.log('Export button clicked');
-            const csv = `Username,${testTitle} Point Grade,End-of-Line Indicator\n` + users.map(user => {
+            const csv = `Username,${testTitle} Points Grade,End-of-Line Indicator\n` + users.map(user => {
                 return `#${user.username},${(user.ut[0]+user.ut[1]).toFixed(2)},#`;
             }).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
