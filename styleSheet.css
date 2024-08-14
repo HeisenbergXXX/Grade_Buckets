@@ -16,6 +16,11 @@ h3 {
     text-align: left;
 }
 
+#version{
+    text-align: end;
+    font-size: medium;
+}
+
 #mainContainer {
     display: flex;
 }
@@ -39,7 +44,7 @@ h3 {
     display: block;
 }
 
-#buttonsField,#toleranceField {
+#buttonsField,#toleranceField, #notesField {
     background-color: #f4f4f4;
     width: 20%;
     padding: 30px;

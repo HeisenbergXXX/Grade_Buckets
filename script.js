@@ -185,6 +185,7 @@ function getKey(data) {
     const lines = data.split('\n');
     const answer = lines[0].split(',');
     const boxVols = lines[1].split(',');
+    console.log('Answers: ', answer);
     console.log('Box Volumes:', boxVols);
 
     for (let i = 0; i < answer.length; i++) {
