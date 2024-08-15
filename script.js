@@ -29,6 +29,7 @@ let testTitle = ''; //read from import file title
 let questionCount;  //set after key is imported (key.length)
 let partCount;      //set after key is imported, each part has 5 questions(mass, volume, center of mass XYZ)
 let totalPoints;    //set after key is imported, each question 10 points (1 mass, 6 volume, 3 center of mass)
+let avgChart;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         // Clear previous content
         const output = document.getElementById('output');
         output.innerHTML = '';
+        avgChart.destroy();
         makeTableDev(users);
     });
 
@@ -476,6 +478,45 @@ function makeTableDev(users) {
     document.getElementById('classAverage').style.display = 'block';
     document.getElementById('classCount').textContent = 'Sample Size: ' + count;
     document.getElementById('classCount').style.display = 'block';
+
+    // Calculate the number of users in each score range (0-100, increments of 10)
+    const scoreRanges = new Array(10).fill(0);
+    users.forEach(user => {
+        const totalScore = (user.ut[0] + user.ut[1]) / totalPoints * 100;
+        const rangeIndex = Math.min(Math.floor(totalScore / 10), 9); // Ensure max index is 9 (for 90-100 range)
+        scoreRanges[rangeIndex]++;
+    });
+
+    createChart(scoreRanges);
+
+}
+
+function createChart(count){
+    const ctx = document.getElementById('avgChart').getContext('2d');
+    avgChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', '60-70', '70-80', '80-90', '90-100'],
+            datasets: [{
+                label: 'Number of Users',
+                data: count,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
 }
 
 function bucket(dev) {

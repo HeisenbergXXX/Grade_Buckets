@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styleSheet.css">
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>ENGD250 Grade</title>
 </head>
 <body>
@@ -15,31 +16,6 @@
     </h1>
 
 <div id="mainContainer">
-    <div id="buttonsField">
-        <h4 id="keyIndicator" style="display: none;">Answer Key Uploaded</h4>
-        <h4 id="docIndicator" style="display: none;">Document Uploaded</h4>
-        <h4 id="exportedIndicator" style="display: none;">Document Exported</h4>
-        <!-- <h3 id="exportPath" style="display: none;"></h3> -->
-    <!-- </div>
-    <div> -->
-        <!-- class average -->
-        <h3 id="classAverage" style="display: none;">Class Average: <span id="classAverageValue"></span></h3>
-        <!-- class count -->
-        <h3 id="classCount" style="display: none;">Class Count: <span id="classCountValue"></span></h3>
-    <!-- </div>
-    <div id="buttonsField"> -->
-        <button id="importKeyButton" class="button">1. Import Answer Key</button>
-        <button id="importButton" class="button">2. Import CSV File</button>
-        <button id="processButton" class="button" style="display: none;">Process</button>
-        <button id="exportButton" class="button" style="display: none;">Export</button>
-    </div>
-
-    <div id="toleranceField">
-        <h3>Tolerance | Grade Multiplier</h3>
-        <div id="toleranceArray"></div>
-        <button id="updateToleranceButton">Update</button>
-    </div>
-
     <div id="notesField">
         <h2>
             AnwserKey format:
@@ -59,6 +35,28 @@
         <p>
             D2L/Assessments/Test/FinalExam-> Export to CSV file
         </p>
+    </div>
+    <div id="buttonsField">
+        <h4 id="keyIndicator" style="display: none;">Answer Key Uploaded</h4>
+        <h4 id="docIndicator" style="display: none;">Document Uploaded</h4>
+        <h4 id="exportedIndicator" style="display: none;">Document Exported</h4>
+        <!-- class average -->
+        <h3 id="classAverage" style="display: none;">Class Average: <span id="classAverageValue"></span></h3>
+        <!-- class count -->
+        <h3 id="classCount" style="display: none;">Class Count: <span id="classCountValue"></span></h3>
+        <button id="importKeyButton" class="button">1. Import Answer Key</button>
+        <button id="importButton" class="button">2. Import CSV File</button>
+        <button id="processButton" class="button" style="display: none;">Process</button>
+        <button id="exportButton" class="button" style="display: none;">Export</button>
+    </div>
+
+    <div id="toleranceField">
+        <h3>Tolerance | Grade Multiplier</h3>
+        <div id="toleranceArray"></div>
+        <button id="updateToleranceButton">Update</button>
+    </div>    
+    <div>
+        <canvas id="avgChart" width="500" height="350"></canvas>
     </div>
 </div>
 
