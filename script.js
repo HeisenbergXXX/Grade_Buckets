@@ -467,25 +467,25 @@ function makeTableDev(users) {
     //calculate and display class average
     let sum = 0;
     let count = 0;
+    let f = 0;
+    const scoreRanges = new Array(10).fill(0);
     users.forEach(user => {
         sum += user.ut[0] + user.ut[1];
         count++;
+        const userScore = (user.ut[0] + user.ut[1])/totalPoints*100;
+        const rangeIndex = Math.min(Math.floor(userScore / 10), 9); // Ensure max index is 9 (for 90-100 range)
+        scoreRanges[rangeIndex]++;
+        userScore < 50 ? f++ : f;
     });
     console.log('Class sum:', sum);
     const average = sum / count / totalPoints;
     console.log('Class average:', average);
     document.getElementById('classAverage').textContent = 'Class average: ' + (average*100).toFixed(2)+ '%';
     document.getElementById('classAverage').style.display = 'block';
-    document.getElementById('classCount').textContent = 'Sample Size: ' + count;
+    document.getElementById('classCount').textContent = 'Class Size: ' + count;
     document.getElementById('classCount').style.display = 'block';
-
-    // Calculate the number of users in each score range (0-100, increments of 10)
-    const scoreRanges = new Array(10).fill(0);
-    users.forEach(user => {
-        const totalScore = (user.ut[0] + user.ut[1]) / totalPoints * 100;
-        const rangeIndex = Math.min(Math.floor(totalScore / 10), 9); // Ensure max index is 9 (for 90-100 range)
-        scoreRanges[rangeIndex]++;
-    });
+    document.getElementById('fCount').textContent = 'Failed: ' + f + '(' + (f/count*100).toFixed(2) + '%)';
+    document.getElementById('fCount').style.display = 'block';
 
     createChart(scoreRanges);
 
